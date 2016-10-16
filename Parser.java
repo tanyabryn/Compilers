@@ -10,16 +10,12 @@ public class Parser {
 	public static void main(String[] args) throws IOException{
 		System.out.println("Let the parsing begin!");
 		td = new TokenDumper(args[0]);
-		System.out.println("tokendumper buinn");
 		Parser parser = new Parser();
-
-		System.out.println("hello");
 		parser.program();
 		System.out.write('\n');
 	}
 	
 	public Parser() throws IOException{
-		System.out.println("smida parser");
 		lookahead = td.getNextToken();
 
 	}
@@ -27,7 +23,7 @@ public class Parser {
 	private void match(TokenCode t){
 		if(lookahead.getTokenCode() == t){
 			try {
-				System.out.print(t.toString());
+				System.out.println(lookahead.getTokenCode());
 				lookahead = td.getNextToken();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -35,12 +31,15 @@ public class Parser {
 			}
 		}
 		else{
-			System.out.println(t.toString());
+			System.out.println(lookahead.getTokenCode());
+			System.out.println(lookahead.getSymTabEntry());
+			System.out.println(t);
 			System.out.println("Villa");
 		}
 	}
 	
 	private void program(){
+		System.out.println("program");
 		match(TokenCode.CLASS);
 		match(TokenCode.IDENTIFIER);
 		match(TokenCode.LBRACE);
@@ -50,31 +49,39 @@ public class Parser {
 		match(TokenCode.EOF);
 	}
 	private void variableDeclarations() {
+		System.out.println("variableDeclarations");
 		_variableDeclarations();
 	}
 	private void _variableDeclarations() {
-		type();
-		variableList();
-		if(lookahead.getTokenCode() == TokenCode.SEMICOLON){
+		System.out.println("_variableDeclarations");
+		if(type()){
+			type();
+			variableList();
 			match(TokenCode.SEMICOLON);
 			_variableDeclarations();
 		}
 	}
-	private void type(){
+	private boolean type(){
+		System.out.println("type");
 		if(lookahead.getTokenCode() == TokenCode.INT){
 			match(TokenCode.INT);
+			return true;
 		}
 		else if(lookahead.getTokenCode() == TokenCode.REAL){
 			match(TokenCode.REAL);
+			return true;
 		}
+		return false;
 			
 	}
     private void variableList() {
+    	System.out.println("variableList");
     	variable();
     	_variableList();
     }
     
     private void _variableList(){
+    	System.out.println("_variableList");
     	if(lookahead.getTokenCode() == TokenCode.COMMA){
     		match(TokenCode.COMMA);
         	variable();
@@ -84,12 +91,14 @@ public class Parser {
     }
     
     private void variable () {
+    	System.out.println("variable");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		_variable();
     	}
     }
     private void _variable(){
+    	System.out.println("_variable");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		match(TokenCode.NUMBER);
@@ -97,20 +106,25 @@ public class Parser {
     	}
     }
     private void methodDeclarations () {
+    	System.out.println("methodDeclarations");
     	methodDeclaration();
     	moreMethodDeclarations();
     }
     private void moreMethodDeclarations() {
+    	System.out.println("moreMethodDeclarations");
+
     	_moreMethodDeclarations();
     }
     
     private void _moreMethodDeclarations(){
+    	System.out.println("_moreMethodDeclarations");
     	if(methodDeclaration()){
     		_moreMethodDeclarations();
     	}
 
     }
     private boolean methodDeclaration(){
+    	System.out.println("methodDeclaration");
     	if(lookahead.getTokenCode() == TokenCode.STATIC){
     		match(TokenCode.STATIC);
     		methodReturnType();
@@ -118,24 +132,28 @@ public class Parser {
     		match(TokenCode.LPAREN);
     		parameters();
     		match(TokenCode.RPAREN);
-    		match(TokenCode.LBRACKET);
+    		match(TokenCode.LBRACE);
     		variableDeclarations();
     		statementList();
-    		match(TokenCode.RBRACKET);
+    		match(TokenCode.RBRACE);
     		return true;
     	}
     	return false;
     }
     private void methodReturnType() {
+    	System.out.println("methodReturnType");
     	type();
     	if(lookahead.getTokenCode() == TokenCode.VOID){
     		match(TokenCode.VOID);
     	}
     }
     private void parameters () {
+    	System.out.println("parameters");
+
     	parameterList();
     }
     private void parameterList() {
+    	System.out.println("parameterList");
     	type();
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
@@ -143,6 +161,7 @@ public class Parser {
     	}  	
     }
     private void _parameterList() {
+    	System.out.println("_parameterList");
     	if(lookahead.getTokenCode() == TokenCode.COMMA){
     		match(TokenCode.COMMA);
     		type();
@@ -151,14 +170,17 @@ public class Parser {
     	}
     }
     private void statementList() {
+    	System.out.println("statementList");
     	_statementList();
     }
     private void _statementList() {
+    	System.out.println("_statementList");
     	if(statement()){
     		_statementList();
     	}
     }
     private boolean statement(){
+    	System.out.println("statement");
     	if(idStartingStatement()){
     		return true;
     	}
@@ -179,6 +201,10 @@ public class Parser {
     		match(TokenCode.ASSIGNOP);
     		expression();
     		match(TokenCode.SEMICOLON);
+    		expression();
+    		match(TokenCode.SEMICOLON);
+    		incrDecVar();
+    		match(TokenCode.RPAREN);
     		statementBlock();
     		return true;
     	}
@@ -207,6 +233,7 @@ public class Parser {
 
     }
     private boolean idStartingStatement(){
+    	System.out.println("idStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		restOfStartingStatement();
@@ -215,6 +242,7 @@ public class Parser {
     	return false;
     }
     private void restOfStartingStatement(){
+    	System.out.println("restOfStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -230,13 +258,16 @@ public class Parser {
     		match(TokenCode.LPAREN);
     		expressionList();
     		match(TokenCode.RPAREN);
+    		match(TokenCode.SEMICOLON);
     	}
     	else if(lookahead.getTokenCode() == TokenCode.INCDECOP){
     		match(TokenCode.INCDECOP);
+    		match(TokenCode.SEMICOLON);
     	}
     	
     }
     private void _restOfStartingStatement(){
+    	System.out.println("_restOfStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.ASSIGNOP){
     		match(TokenCode.ASSIGNOP);
     		expression();
@@ -249,10 +280,12 @@ public class Parser {
 
 
 	private void optionalExpression(){
+    	System.out.println("optionalExpression");
 		expression();
 	}
 
 	private boolean statementBlock(){
+    	System.out.println("statementBlock");
 		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
 			match(TokenCode.LBRACE);
 			statementList();
@@ -263,6 +296,7 @@ public class Parser {
 	}
 
 	private void incrDecVar(){
+    	System.out.println("incrDecVar");
 		variableLoc();
 		if(lookahead.getTokenCode() == TokenCode.INCDECOP) {
 			match(TokenCode.INCDECOP);
@@ -270,6 +304,7 @@ public class Parser {
 	}
 
 	private void optionalElse(){
+    	System.out.println("optionalElse");
 		if(lookahead.getTokenCode() == TokenCode.ELSE) {
 			match(TokenCode.ELSE);
 			statementBlock();
@@ -277,11 +312,13 @@ public class Parser {
 	}
 
 	private void expressionList(){
+    	System.out.println("expressionList");
 		expression();
 		moreExpressions();
 	}
 
 	private void moreExpressions(){
+    	System.out.println("moreExpressions");
 		if(lookahead.getTokenCode() == TokenCode.COMMA) {
 			match(TokenCode.COMMA);
 			expression();
@@ -289,11 +326,13 @@ public class Parser {
 		}
 	}
 	private void expression(){
+    	System.out.println("expression");
 		simpleExpression();
 		_expression();
 	}
 
 	private void _expression() {
+    	System.out.println("_expression");
 		if(lookahead.getTokenCode() == TokenCode.RELOP) {
 			match(TokenCode.RELOP);
 			simpleExpression();
@@ -302,6 +341,7 @@ public class Parser {
 
     
     private void simpleExpression(){
+    	System.out.println("simpleExpression");
     	if(sign()){
     		term();
     		_simpleExpression();
@@ -313,6 +353,7 @@ public class Parser {
     }
     
     private void _simpleExpression(){
+    	System.out.println("_simpleExpression");
     	if(lookahead.getTokenCode() == TokenCode.ADDOP){
     		match(TokenCode.ADDOP);
     		term();
@@ -320,10 +361,12 @@ public class Parser {
     	}
     }
     private void term(){
+    	System.out.println("term");
     	factor();
     	_term();
     }
     private void _term(){
+    	System.out.println("_term");
     	if(lookahead.getTokenCode() == TokenCode.MULOP){
     		match(TokenCode.MULOP);
     		factor();
@@ -331,6 +374,7 @@ public class Parser {
     	}
     }
     private void factor(){
+    	System.out.println("factor");
     	if(lookahead.getTokenCode() == TokenCode.NUMBER){
     		match(TokenCode.NUMBER);
     	}
@@ -348,12 +392,14 @@ public class Parser {
     	}    	
     }
     private void idStartingFactor(){
+    	System.out.println("idStartingFactor");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		restOfIdStartingFactor();
     	}
     }
     private void restOfIdStartingFactor(){
+    	System.out.println("restOfIdStartingFactor");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -366,12 +412,14 @@ public class Parser {
     	}
     }
     private void variableLoc(){
+    	System.out.println("variableLoc");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		_variableLoc();
     	}
     }
     private void _variableLoc(){
+    	System.out.println("_variableLoc");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -380,6 +428,7 @@ public class Parser {
     }
    
     private boolean sign(){
+    	System.out.println("sign");
     	if(lookahead.getOpType() == OpType.PLUS){
     		match(TokenCode.ADDOP);
     		return true;

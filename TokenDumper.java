@@ -11,7 +11,6 @@ public class TokenDumper {
 	}
 	
 	public Token getNextToken() throws IOException{
-	    System.out.println("Next token");
 		Token t = lexer.yylex();
 	    return t;
 	}
