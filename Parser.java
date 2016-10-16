@@ -214,16 +214,58 @@ public class Parser {
     		match(TokenCode.INCDECOP);
     	}
     }
-    
-    
-    
-    private void optionalExpression(){}
-    private void statementBlock(){}
-    private void incrDecVar(){}
-    private void optionalElse(){}
-    private void expressionList(){}
-    private void moreExpressions(){}
-    private void expression(){}
+
+
+	private void optionalExpression(){
+		expression();
+	}
+
+	private void statementBlock(){
+		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
+			match(TokenCode.LBRACE);
+			statementList();
+			match(TokenCode.RBRACE);
+		}
+	}
+
+	private void incrDecVar(){
+		variableLoc();
+		if(lookahead.getTokenCode() == TokenCode.INCDECOP) {
+			match(TokenCode.INCDECOP);
+		}
+	}
+
+	private void optionalElse(){
+		if(lookahead.getTokenCode() == TokenCode.ELSE) {
+			match(TokenCode.ELSE);
+			statementBlock();
+		}
+	}
+
+	private void expressionList(){
+		expression();
+		moreExpressions();
+	}
+
+	private void moreExpressions(){
+		if(lookahead.getTokenCode() == TokenCode.COMMA) {
+			match(TokenCode.COMMA);
+			expression();
+			moreExpressions();
+		}
+	}
+	private void expression(){
+		simpleExpression();
+		_expression();
+	}
+
+	private void _expression() {
+		if(lookahead.getTokenCode() == TokenCode.RELOP) {
+			match(TokenCode.RELOP);
+			simpleExpression();
+		}
+	}
+
     
     private void simpleExpression(){
     	if(sign()){
