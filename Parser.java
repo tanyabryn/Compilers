@@ -5,22 +5,37 @@ import java.io.*;
 public class Parser {
 
 	static Token lookahead;
-	public static void main(String[] args){
+	public static TokenDumper td;
+	
+	public static void main(String[] args) throws IOException{
 		System.out.println("Let the parsing begin!");
+		td = new TokenDumper(args[0]);
+		System.out.println("tokendumper buinn");
 		Parser parser = new Parser();
+
+		System.out.println("hello");
 		parser.program();
 		System.out.write('\n');
 	}
 	
-	public Parser(){
-		lookahead = nextToken();
+	public Parser() throws IOException{
+		System.out.println("smida parser");
+		lookahead = td.getNextToken();
+
 	}
 	
 	private void match(TokenCode t){
 		if(lookahead.getTokenCode() == t){
-			lookahead = nextToken();
+			try {
+				System.out.print(t.toString());
+				lookahead = td.getNextToken();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else{
+			System.out.println(t.toString());
 			System.out.println("Villa");
 		}
 	}
@@ -37,7 +52,7 @@ public class Parser {
 	private void variableDeclarations() {
 		_variableDeclarations();
 	}
-	private void _variableDeclarations(){
+	private void _variableDeclarations() {
 		type();
 		variableList();
 		if(lookahead.getTokenCode() == TokenCode.SEMICOLON){
@@ -88,12 +103,14 @@ public class Parser {
     private void moreMethodDeclarations() {
     	_moreMethodDeclarations();
     }
+    
     private void _moreMethodDeclarations(){
-    	methodDeclaration();
-    	_moreMethodDeclarations();
+    	if(methodDeclaration()){
+    		_moreMethodDeclarations();
+    	}
 
     }
-    private void methodDeclaration(){
+    private boolean methodDeclaration(){
     	if(lookahead.getTokenCode() == TokenCode.STATIC){
     		match(TokenCode.STATIC);
     		methodReturnType();
@@ -105,7 +122,9 @@ public class Parser {
     		variableDeclarations();
     		statementList();
     		match(TokenCode.RBRACKET);
+    		return true;
     	}
+    	return false;
     }
     private void methodReturnType() {
     	type();
@@ -135,12 +154,15 @@ public class Parser {
     	_statementList();
     }
     private void _statementList() {
-    	statement();
-    	_statementList();
+    	if(statement()){
+    		_statementList();
+    	}
     }
-    private void statement(){
-    	idStartingStatement();
-    	if(lookahead.getTokenCode() == TokenCode.IF){
+    private boolean statement(){
+    	if(idStartingStatement()){
+    		return true;
+    	}
+    	else if(lookahead.getTokenCode() == TokenCode.IF){
     		match(TokenCode.IF);
     		match(TokenCode.IDENTIFIER);
     		match(TokenCode.LPAREN);
@@ -148,6 +170,7 @@ public class Parser {
     		match(TokenCode.RPAREN);
     		statementBlock();
     		optionalElse();
+    		return true;
     	}
     	else if(lookahead.getTokenCode() == TokenCode.FOR){
     		match(TokenCode.FOR);
@@ -157,30 +180,39 @@ public class Parser {
     		expression();
     		match(TokenCode.SEMICOLON);
     		statementBlock();
+    		return true;
     	}
     	else if(lookahead.getTokenCode() == TokenCode.RETURN){
     		match(TokenCode.RETURN);
     		optionalExpression();
     		match(TokenCode.SEMICOLON);
+    		return true;
     	}
     	else if(lookahead.getTokenCode() == TokenCode.BREAK){
     		match(TokenCode.BREAK);
     		match(TokenCode.SEMICOLON);
+    		return true;
     	}
     	else if(lookahead.getTokenCode() == TokenCode.CONTINUE){
     		match(TokenCode.CONTINUE);
     		match(TokenCode.SEMICOLON);
+    		return true;
+    	}
+    	else if(statementBlock()){
+        	return true;
     	}
     	else{
-        	statementBlock();
+    		return false;
     	}
 
     }
-    private void idStartingStatement(){
+    private boolean idStartingStatement(){
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		restOfStartingStatement();
+    		return true;
     	}
+    	return false;
     }
     private void restOfStartingStatement(){
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
@@ -220,12 +252,14 @@ public class Parser {
 		expression();
 	}
 
-	private void statementBlock(){
+	private boolean statementBlock(){
 		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
 			match(TokenCode.LBRACE);
 			statementList();
 			match(TokenCode.RBRACE);
+			return true;
 		}
+		return false;
 	}
 
 	private void incrDecVar(){
