@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 
-public class Parser {
+public class Parser{
 
 	static Token lookahead;
 	static Token nextLookahead;
@@ -15,6 +15,7 @@ public class Parser {
 	static TokenCode expected = null;
 	static int columnNumber = 0;
 	private TokenCode[] typeF = { TokenCode.IDENTIFIER};
+	
 	
 	
 	public static void main(String[] args) throws IOException{
@@ -31,23 +32,28 @@ public class Parser {
 	}
 	
 	private void match(TokenCode t){
-		/*if(lookahead.getLine() != lineNumber){
-			if(containsError){
-				System.out.print(lineNumber + " : ");
-				for(int i = 0; i < lineOfTokens.size(); i++){
-					System.out.print(lineOfTokens.get(i));
-					
-				}
-			}
-			lineNumber = lookahead.getLine();*/
-			//lineOfTokens.removeAllElements();
-		//}
 		if(lookahead.getTokenCode() == t){
 			try {
 				//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
 				System.out.println(lookahead.getTokenCode());
-				lookahead = td.getNextToken();
+				System.out.println(nextLookahead);
+				if(nextLookahead == null){
+					lookahead = td.getNextToken();
+				}
+				else{
+					lookahead = nextLookahead;
+					nextLookahead = null;
+				}
 			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(lookahead.getTokenCode() == TokenCode.ERR_ILL_CHAR){
+			System.out.println("Illegal char");
+			try {
+				lookahead = td.getNextToken();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -65,7 +71,7 @@ public class Parser {
 		}
 	}
 	
-	private void program(){
+	private void program() throws IOException{
 		System.out.println("program");
 		match(TokenCode.CLASS);
 		match(TokenCode.IDENTIFIER);
@@ -75,11 +81,11 @@ public class Parser {
 		match(TokenCode.RBRACE);
 		match(TokenCode.EOF);
 	}
-	private void variableDeclarations() {
+	private void variableDeclarations() throws IOException {
 		System.out.println("variableDeclarations");
 		_variableDeclarations();
 	}
-	private void _variableDeclarations() {
+	private void _variableDeclarations() throws IOException {
 		System.out.println("_variableDeclarations");
 		if(type()){
 			variableList();
@@ -87,23 +93,26 @@ public class Parser {
 			_variableDeclarations();
 		}
 		else{
-			try {
 				nextLookahead = td.getNextToken();
 				System.out.println("hello" + nextLookahead.getTokenCode());
-				if(Arrays.asList(typeF).contains(nextLookahead.getTokenCode())){
+				if(Arrays.asList(SyncronizingSets.type).contains(nextLookahead.getTokenCode())){
 					System.out.println("okei");
+					match(null);
 					lookahead = nextLookahead;
+					nextLookahead = null;
 					variableList();
 					match(TokenCode.SEMICOLON);
 					_variableDeclarations();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					
+				
 			}
+				else{
+					
+				}
 			
 		}
 	}
+
 	private boolean type(){
 		System.out.println("type");
 		if(lookahead.getTokenCode() == TokenCode.INT){
@@ -148,25 +157,25 @@ public class Parser {
     		match(TokenCode.RBRACKET);
     	}
     }
-    private void methodDeclarations () {
+    private void methodDeclarations () throws IOException {
     	System.out.println("methodDeclarations");
     	methodDeclaration();
     	moreMethodDeclarations();
     }
-    private void moreMethodDeclarations() {
+    private void moreMethodDeclarations() throws IOException {
     	System.out.println("moreMethodDeclarations");
 
     	_moreMethodDeclarations();
     }
     
-    private void _moreMethodDeclarations(){
+    private void _moreMethodDeclarations() throws IOException{
     	System.out.println("_moreMethodDeclarations");
     	if(methodDeclaration()){
     		_moreMethodDeclarations();
     	}
 
     }
-    private boolean methodDeclaration(){
+    private boolean methodDeclaration() throws IOException{
     	System.out.println("methodDeclaration");
     	if(lookahead.getTokenCode() == TokenCode.STATIC){
     		match(TokenCode.STATIC);
@@ -185,9 +194,9 @@ public class Parser {
     }
     private void methodReturnType() {
     	System.out.println("methodReturnType");
-    	if(type())
+    	if(type()){}
     		
-    	if(lookahead.getTokenCode() == TokenCode.VOID){
+    	else if(lookahead.getTokenCode() == TokenCode.VOID){
     		match(TokenCode.VOID);
     	}
     }
@@ -271,8 +280,22 @@ public class Parser {
         	return true;
     	}
     	else{
-    		return false;
+			try {
+				nextLookahead = td.getNextToken();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("hello expression " + nextLookahead.getTokenCode());
+			if(Arrays.asList(SyncronizingSets.expression).contains(nextLookahead.getTokenCode())){
+				System.out.println("okei expression");
+				match(null);
+				lookahead = nextLookahead;
+				nextLookahead = null;
+				statement();
+			}
     	}
+		return false;
 
     }
     private boolean idStartingStatement(){
@@ -304,6 +327,7 @@ public class Parser {
     		match(TokenCode.SEMICOLON);
     	}
     	else if(lookahead.getTokenCode() == TokenCode.INCDECOP){
+    		
     		match(TokenCode.INCDECOP);
     		match(TokenCode.SEMICOLON);
     	}

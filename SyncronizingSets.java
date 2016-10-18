@@ -1,16 +1,16 @@
 package Assignment2;
 
 public class SyncronizingSets {
-	public TokenCode[] program = { TokenCode.EOF};
-	public TokenCode[] variableDeclarations = { TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE, TokenCode.STATIC};
-	public TokenCode[] _variableDeclarations = { TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE, TokenCode.STATIC };
-	public TokenCode[] type = { TokenCode.IDENTIFIER};
-	public TokenCode[] variableList = { TokenCode.SEMICOLON };
-	public TokenCode[] _variableList = { TokenCode.SEMICOLON };
-	public TokenCode[] variable = { TokenCode.COMMA};
-	public TokenCode[] _variable = { TokenCode.COMMA};
-	public TokenCode[] methodDeclarations = { TokenCode.RBRACE};
-	public TokenCode[] moreMethodDeclarations = { TokenCode.RBRACE};
+	public static final TokenCode[] program = { TokenCode.EOF};
+	public static final TokenCode[] variableDeclarations = { TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE, TokenCode.STATIC};
+	public static final TokenCode[] _variableDeclarations = { TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE, TokenCode.STATIC };
+	public static final TokenCode[] type = { TokenCode.IDENTIFIER};
+	public static final TokenCode[] variableList = { TokenCode.SEMICOLON };
+	public static final TokenCode[] _variableList = { TokenCode.SEMICOLON };
+	public static final TokenCode[] variable = { TokenCode.COMMA};
+	public static final TokenCode[] _variable = { TokenCode.COMMA};
+	public static final TokenCode[] methodDeclarations = { TokenCode.RBRACE};
+	public static TokenCode[] moreMethodDeclarations = { TokenCode.RBRACE};
 	public TokenCode[] _moreMethodDeclarations = { TokenCode.RBRACE};
 	public TokenCode[] methodDeclaration = { TokenCode.STATIC};
 	public TokenCode[] methodReturnType = { TokenCode.IDENTIFIER};
@@ -29,7 +29,7 @@ public class SyncronizingSets {
 	public TokenCode[] optionalElse = {TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE};
 	public TokenCode[] expressionList = {TokenCode.RPAREN};
 	public TokenCode[] moreExpressions = {TokenCode.RPAREN};
-	public TokenCode[] expression = {TokenCode.RBRACKET, TokenCode.RPAREN, TokenCode.COMMA, TokenCode.SEMICOLON, TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE};
+	public static TokenCode[] expression = {TokenCode.RBRACKET, TokenCode.RPAREN, TokenCode.COMMA, TokenCode.SEMICOLON, TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE};
 	public TokenCode[] _expression = {TokenCode.RBRACKET, TokenCode.RPAREN, TokenCode.COMMA, TokenCode.SEMICOLON, TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE };
 	public TokenCode[] simpleExpression = {TokenCode.RELOP, TokenCode.RBRACKET, TokenCode.RPAREN, TokenCode.COMMA, TokenCode.SEMICOLON, TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE};
 	public TokenCode[] _simpleExpression = {TokenCode.RELOP, TokenCode.RBRACKET, TokenCode.RPAREN, TokenCode.COMMA, TokenCode.SEMICOLON, TokenCode.IF, TokenCode.FOR, TokenCode.RETURN, TokenCode.BREAK, TokenCode.CONTINUE, TokenCode.IDENTIFIER, TokenCode.LBRACE};
@@ -40,5 +40,8 @@ public class SyncronizingSets {
 	public TokenCode[] restOfIdStartingFactor = {TokenCode.MULOP};
 	public TokenCode[] variableLoc = {TokenCode.INCDECOP, TokenCode.ASSIGNOP};
 	public TokenCode[] sign = {TokenCode.NUMBER, TokenCode.LPAREN, TokenCode.NOT, TokenCode.IDENTIFIER};
+	
+	
+	
 }
 
