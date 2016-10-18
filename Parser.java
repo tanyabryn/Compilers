@@ -51,18 +51,12 @@ public class Parser{
 		}
 		else if(lookahead.getTokenCode() == TokenCode.ERR_ILL_CHAR){
 			System.out.println("Illegal char");
-			try {
-				lookahead = td.getNextToken();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 		else{
 			//containsError = true;
 			//expected = t;
 			//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
-			System.out.println(lookahead.getTokenCode());
+			//System.out.println(lookahead.getTokenCode());
 			//System.out.println(lookahead.getSymTabEntry().getLexeme());
 			System.out.println(t);
 			System.out.println("Villa");
