@@ -1,11 +1,21 @@
 package Assignment2;
 import java.io.*;
+import java.util.Arrays;
+import java.util.Vector;
 
 
 public class Parser {
 
 	static Token lookahead;
+	static Token nextLookahead;
 	public static TokenDumper td;
+	static int lineNumber = 0;
+	static Vector<String> lineOfTokens;
+	static boolean containsError = false;
+	static TokenCode expected = null;
+	static int columnNumber = 0;
+	private TokenCode[] typeF = { TokenCode.IDENTIFIER};
+	
 	
 	public static void main(String[] args) throws IOException{
 		System.out.println("Let the parsing begin!");
@@ -21,8 +31,20 @@ public class Parser {
 	}
 	
 	private void match(TokenCode t){
+		/*if(lookahead.getLine() != lineNumber){
+			if(containsError){
+				System.out.print(lineNumber + " : ");
+				for(int i = 0; i < lineOfTokens.size(); i++){
+					System.out.print(lineOfTokens.get(i));
+					
+				}
+			}
+			lineNumber = lookahead.getLine();*/
+			//lineOfTokens.removeAllElements();
+		//}
 		if(lookahead.getTokenCode() == t){
 			try {
+				//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
 				System.out.println(lookahead.getTokenCode());
 				lookahead = td.getNextToken();
 			} catch (Exception e) {
@@ -31,10 +53,15 @@ public class Parser {
 			}
 		}
 		else{
+			//containsError = true;
+			//expected = t;
+			//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
 			System.out.println(lookahead.getTokenCode());
-			System.out.println(lookahead.getSymTabEntry());
+			//System.out.println(lookahead.getSymTabEntry().getLexeme());
 			System.out.println(t);
 			System.out.println("Villa");
+			System.out.println("Expected: " + t);
+			System.out.println(td.getLine(lookahead.getLine()+1));
 		}
 	}
 	
@@ -55,10 +82,26 @@ public class Parser {
 	private void _variableDeclarations() {
 		System.out.println("_variableDeclarations");
 		if(type()){
-			type();
 			variableList();
 			match(TokenCode.SEMICOLON);
 			_variableDeclarations();
+		}
+		else{
+			try {
+				nextLookahead = td.getNextToken();
+				System.out.println("hello" + nextLookahead.getTokenCode());
+				if(Arrays.asList(typeF).contains(nextLookahead.getTokenCode())){
+					System.out.println("okei");
+					lookahead = nextLookahead;
+					variableList();
+					match(TokenCode.SEMICOLON);
+					_variableDeclarations();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	private boolean type(){
@@ -142,7 +185,8 @@ public class Parser {
     }
     private void methodReturnType() {
     	System.out.println("methodReturnType");
-    	type();
+    	if(type())
+    		
     	if(lookahead.getTokenCode() == TokenCode.VOID){
     		match(TokenCode.VOID);
     	}
@@ -186,7 +230,6 @@ public class Parser {
     	}
     	else if(lookahead.getTokenCode() == TokenCode.IF){
     		match(TokenCode.IF);
-    		match(TokenCode.IDENTIFIER);
     		match(TokenCode.LPAREN);
     		expression();
     		match(TokenCode.RPAREN);
