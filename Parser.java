@@ -41,7 +41,7 @@ public class Parser{
         int q = Integer.toString(lineNumber).length();
         column = column + 3 + q;
         String error = "^ " + msg;
-        String line = td.getLine(lineNumber);
+        String line = td.getLine(lineNumber+1);
         String spaces = "";
 
         if(column > 0) {
@@ -52,13 +52,16 @@ public class Parser{
         System.out.println(lineNumber + " : " + line );
         System.out.println(spaces + error);
         System.out.println("--------------------------------");
-        isInFollow(set);
+        if(t != TokenCode.ERR_ILL_CHAR){
+        	isInFollow(set);
+        }
     }
 	
 	public Token getNextToken() throws IOException{
 		Token result = td.nextToken();
 		if(result.getTokenCode() == TokenCode.ERR_ILL_CHAR){
 			System.out.println(" Villa Illegal Char!");
+			handleError(TokenCode.ERR_ILL_CHAR, null, result.getLine(), result.getColumn(), "Illegal Character");
 			result = td.nextToken();
 		}
 		return result;
@@ -372,12 +375,12 @@ public class Parser{
 
 
 	private void optionalExpression() throws IOException{
-    	//System.out.println("optionalExpression");
+    	System.out.println("optionalExpression");
 		expression();
 	}
 
 	private boolean statementBlock() throws IOException{
-    	//System.out.println("statementBlock");
+    	System.out.println("statementBlock");
 		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
 			match(TokenCode.LBRACE, SyncronizingSets.statementBlock, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.LBRACE));
 			statementList();
@@ -388,7 +391,7 @@ public class Parser{
 	}
 
 	private void incrDecVar() throws IOException{
-    	//System.out.println("incrDecVar");
+    	System.out.println("incrDecVar");
 		variableLoc();
 		if(lookahead.getTokenCode() == TokenCode.INCDECOP) {
 			match(TokenCode.INCDECOP, SyncronizingSets.incrDecrVar, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.INCDECOP));
@@ -408,13 +411,13 @@ public class Parser{
 	}
 
 	private void expressionList() throws IOException{
-    	//System.out.println("expressionList");
+    	System.out.println("expressionList");
 		expression();
 		moreExpressions();
 	}
 
 	private void moreExpressions() throws IOException{
-    	//System.out.println("moreExpressions");
+    	System.out.println("moreExpressions");
 		if(lookahead.getTokenCode() == TokenCode.COMMA) {
 			match(TokenCode.COMMA, SyncronizingSets.moreExpressions, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.COMMA));
 			expression();
@@ -422,13 +425,13 @@ public class Parser{
 		}
 	}
 	private void expression() throws IOException{
-    	//System.out.println("expression");
+    	System.out.println("expression");
 		simpleExpression();
 		_expression();
 	}
 
 	private void _expression() throws IOException {
-    	//System.out.println("_expression");
+    	System.out.println("_expression");
 		if(lookahead.getTokenCode() == TokenCode.RELOP) {
 			match(TokenCode.RELOP, SyncronizingSets._expression, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RELOP));
 			if(!simpleExpression()){
@@ -439,7 +442,7 @@ public class Parser{
 
     
     private boolean simpleExpression() throws IOException{
-    	//System.out.println("simpleExpression");
+    	System.out.println("simpleExpression");
     	if(sign()){
     		term();
     		_simpleExpression();
@@ -453,7 +456,7 @@ public class Parser{
     }
     
     private void _simpleExpression() throws IOException{
-    	//System.out.println("_simpleExpression");
+    	System.out.println("_simpleExpression");
     	if(lookahead.getTokenCode() == TokenCode.ADDOP){
     		match(TokenCode.ADDOP, SyncronizingSets._simpleExpression, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.ADDOP));
     		term();
@@ -461,7 +464,7 @@ public class Parser{
     	}
     }
     private boolean term() throws IOException{
-    	//System.out.println("term");
+    	System.out.println("term");
     	if(factor()){
     		_term();
     		return true;
@@ -472,7 +475,7 @@ public class Parser{
     	}
     }
     private void _term() throws IOException{
-    	//System.out.println("_term");
+    	System.out.println("_term");
     	if(lookahead.getTokenCode() == TokenCode.MULOP){
     		match(TokenCode.MULOP, SyncronizingSets._term, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.MULOP));
     		factor();
@@ -480,7 +483,7 @@ public class Parser{
     	}
     }
     private boolean factor() throws IOException{
-    	//System.out.println("factor");
+    	System.out.println("factor");
     	if(lookahead.getTokenCode() == TokenCode.NUMBER){
     		match(TokenCode.NUMBER, SyncronizingSets.factor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.NUMBER));
     		return true;
@@ -518,9 +521,9 @@ public class Parser{
     		match(TokenCode.RBRACKET, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RBRACKET));
     	}
     	else if(lookahead.getTokenCode() == TokenCode.LPAREN){
-    		match(TokenCode.LPAREN, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RPAREN));
+    		match(TokenCode.LPAREN, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.LPAREN));
     		expressionList();
-    		match(TokenCode.RPAREN, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RPAREN));match(TokenCode.RPAREN, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RPAREN));
+    		match(TokenCode.RPAREN, SyncronizingSets.restOfIdStartingFactor, lookahead.getLine(), lookahead.getColumn(), msg.errors.get(TokenCode.RPAREN));
     	}
     }
     private void variableLoc() throws IOException{

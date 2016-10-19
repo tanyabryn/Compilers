@@ -29,6 +29,7 @@ public class ErrorMessages {
         errors.put(TokenCode.LBRACKET, "Expected '['");
         errors.put(TokenCode.RBRACKET, "Expected ']'");
         errors.put(TokenCode.LPAREN, "Expected '('");
+        errors.put(TokenCode.RPAREN, "Expected ')'");
         errors.put(TokenCode.SEMICOLON, "Expected ';'");
         errors.put(TokenCode.COMMA, "Expected ','");
         errors.put(TokenCode.NOT, "Expected '!'");
