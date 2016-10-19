@@ -37,8 +37,9 @@ public class SyncronizingSets {
 	public static final TokenCode[] _term = {TokenCode.ADDOP, TokenCode.IDENTIFIER, TokenCode.NUMBER, TokenCode.LPAREN };
 	public static final TokenCode[] factor = {TokenCode.MULOP};
 	public static final TokenCode[] idStartingFactor = {TokenCode.MULOP, TokenCode.IDENTIFIER };
-	public static final TokenCode[] restOfIdStartingFactor = {TokenCode.MULOP};
-	public static final TokenCode[] variableLoc = {TokenCode.INCDECOP, TokenCode.ASSIGNOP};
+	public static final TokenCode[] restOfIdStartingFactor = {TokenCode.MULOP, TokenCode.SEMICOLON};
+	public static final TokenCode[] variableLoc = {TokenCode.INCDECOP, TokenCode.ASSIGNOP, TokenCode.SEMICOLON};
+	public static final TokenCode[] _variableLoc = {TokenCode.INCDECOP, TokenCode.ASSIGNOP, TokenCode.SEMICOLON};
 	public static final TokenCode[] sign = {TokenCode.NUMBER, TokenCode.LPAREN, TokenCode.NOT, TokenCode.IDENTIFIER};
 	
 	
