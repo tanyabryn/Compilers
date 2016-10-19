@@ -16,7 +16,7 @@ public class TokenDumper {
 		System.out.println("gera lexer");
 	}
 	
-	public Token getNextToken() throws IOException{
+	public Token nextToken() throws IOException{
 		Token t = lexer.yylex();
 		if(t.getTokenCode() == TokenCode.IDENTIFIER){
 			System.out.println(t.getSymTabEntry().getLexeme());

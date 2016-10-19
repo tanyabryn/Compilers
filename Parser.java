@@ -27,9 +27,23 @@ public class Parser{
 	}
 	
 	public Parser() throws IOException{
-		lookahead = td.getNextToken();
+		lookahead = getNextToken();
 
 	}
+	
+	public boolean isInFollow(TokenCode[] t) {
+        return Arrays.asList(t).contains(lookahead.getTokenCode());
+    }
+	
+	public Token getNextToken() throws IOException{
+		Token result = td.nextToken();
+		if(result.getTokenCode() == TokenCode.ERR_ILL_CHAR){
+			System.out.println(" Villa Illegal Char!");
+			result = td.nextToken();
+		}
+		return result;
+	}
+
 	
 	private void match(TokenCode t){
 		if(lookahead.getTokenCode() == t){
@@ -37,7 +51,7 @@ public class Parser{
 				//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
 				System.out.println(lookahead.getTokenCode());
 				if(nextLookahead == null){
-					lookahead = td.getNextToken();
+					lookahead = getNextToken();
 				}
 				else{
 					lookahead = nextLookahead;
@@ -49,7 +63,7 @@ public class Parser{
 			}
 		}
 		else if(lookahead.getTokenCode() == TokenCode.ERR_ILL_CHAR){
-			System.out.println("Illegal char");
+			System.out.println("Smellycat Illegal char");
 		}
 		else{
 			//containsError = true;
@@ -65,7 +79,7 @@ public class Parser{
 	}
 	
 	private void program() throws IOException{
-		System.out.println("program");
+		//System.out.println("program");
 		match(TokenCode.CLASS);
 		match(TokenCode.IDENTIFIER);
 		match(TokenCode.LBRACE);
@@ -75,18 +89,21 @@ public class Parser{
 		match(TokenCode.EOF);
 	}
 	private void variableDeclarations() throws IOException {
-		System.out.println("variableDeclarations");
+		//System.out.println("variableDeclarations");
 		_variableDeclarations();
 	}
 	private void _variableDeclarations() throws IOException {
-		System.out.println("_variableDeclarations");
+		//System.out.println("_variableDeclarations");
 		if(type()){
 			variableList();
 			match(TokenCode.SEMICOLON);
 			_variableDeclarations();
 		}
-		else{
-	/*			nextLookahead = td.getNextToken();
+		else if(typeError()){
+			variableList();
+			match(TokenCode.SEMICOLON);
+			_variableDeclarations();
+			/*nextLookahead = td.getNextToken();
 				System.out.println("hello1" + nextLookahead.getTokenCode());
 				if(Arrays.asList(SyncronizingSets.type).contains(nextLookahead.getTokenCode())){
 					System.out.println("okei");
@@ -97,20 +114,26 @@ public class Parser{
 					match(TokenCode.SEMICOLON);
 					_variableDeclarations();
 					
-			*/	
-			
+				}
+			*/
 		}
 	}
 
-	private boolean typeError(){
-		if(Arrays.asList(SyncronizingSets.type).contains(lookahead.getTokenCode())){
+	private boolean typeError() throws IOException{
+		nextLookahead = getNextToken();
+		System.out.println("toki a undan: " + nextLookahead.getTokenCode());
+		System.out.println("toki a eftir: " + lookahead.getTokenCode());
+
+		if(Arrays.asList(SyncronizingSets.type).contains(nextLookahead.getTokenCode())){
 			System.out.println("Vantar typu");
+			lookahead = nextLookahead;
+			nextLookahead = null;
 			return true;
 		}
 		return false;
 	}
 	private boolean type(){
-		System.out.println("type");
+		//System.out.println("type");
 		if(lookahead.getTokenCode() == TokenCode.INT){
 			match(TokenCode.INT);
 			return true;
@@ -127,13 +150,13 @@ public class Parser{
 			
 	}
     private void variableList() {
-    	System.out.println("variableList");
+    	//System.out.println("variableList");
     	variable();
     	_variableList();
     }
     
     private void _variableList(){
-    	System.out.println("_variableList");
+    	//System.out.println("_variableList");
     	if(lookahead.getTokenCode() == TokenCode.COMMA){
     		match(TokenCode.COMMA);
         	variable();
@@ -143,14 +166,14 @@ public class Parser{
     }
     
     private void variable () {
-    	System.out.println("variable");
+    	//System.out.println("variable");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		_variable();
     	}
     }
     private void _variable(){
-    	System.out.println("_variable");
+    	//System.out.println("_variable");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		match(TokenCode.NUMBER);
@@ -158,25 +181,25 @@ public class Parser{
     	}
     }
     private void methodDeclarations () throws IOException {
-    	System.out.println("methodDeclarations");
+    	//System.out.println("methodDeclarations");
     	methodDeclaration();
     	moreMethodDeclarations();
     }
     private void moreMethodDeclarations() throws IOException {
-    	System.out.println("moreMethodDeclarations");
+    	//System.out.println("moreMethodDeclarations");
 
     	_moreMethodDeclarations();
     }
     
     private void _moreMethodDeclarations() throws IOException{
-    	System.out.println("_moreMethodDeclarations");
+    	//System.out.println("_moreMethodDeclarations");
     	if(methodDeclaration()){
     		_moreMethodDeclarations();
     	}
 
     }
     private boolean methodDeclaration() throws IOException{
-    	System.out.println("methodDeclaration");
+    	//System.out.println("methodDeclaration");
     	if(lookahead.getTokenCode() == TokenCode.STATIC){
     		match(TokenCode.STATIC);
     		methodReturnType();
@@ -193,7 +216,7 @@ public class Parser{
     	return false;
     }
     private void methodReturnType() {
-    	System.out.println("methodReturnType");
+    	//System.out.println("methodReturnType");
     	if(type()){}
     		
     	else if(lookahead.getTokenCode() == TokenCode.VOID){
@@ -201,12 +224,12 @@ public class Parser{
     	}
     }
     private void parameters () {
-    	System.out.println("parameters");
+    	//System.out.println("parameters");
 
     	parameterList();
     }
     private void parameterList() {
-    	System.out.println("parameterList");
+    	//System.out.println("parameterList");
     	type();
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
@@ -214,7 +237,7 @@ public class Parser{
     	}  	
     }
     private void _parameterList() {
-    	System.out.println("_parameterList");
+    	//System.out.println("_parameterList");
     	if(lookahead.getTokenCode() == TokenCode.COMMA){
     		match(TokenCode.COMMA);
     		type();
@@ -223,17 +246,17 @@ public class Parser{
     	}
     }
     private void statementList() throws IOException {
-    	System.out.println("statementList");
+    	//System.out.println("statementList");
     	_statementList();
     }
     private void _statementList() throws IOException {
-    	System.out.println("_statementList");
+    	//System.out.println("_statementList");
     	if(statement()){
     		_statementList();
     	}
     }
     private boolean statement() throws IOException{
-    	System.out.println("statement");
+    	//System.out.println("statement");
     	if(idStartingStatement()){
     		return true;
     	}
@@ -279,13 +302,11 @@ public class Parser{
     	else if(statementBlock()){
         	return true;
     	}
-    	else{
-    	}
 		return false;
 
     }
     private boolean idStartingStatement() throws IOException{
-    	System.out.println("idStartingStatement");
+    	//System.out.println("idStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		restOfStartingStatement();
@@ -294,7 +315,7 @@ public class Parser{
     	return false;
     }
     private void restOfStartingStatement() throws IOException{
-    	System.out.println("restOfStartingStatement");
+    	//System.out.println("restOfStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -308,9 +329,9 @@ public class Parser{
     			match(TokenCode.SEMICOLON);
     		}
     		else{
-    			//System.out.println("smellycat");
+    			System.out.println("Smellycat Missing semicolon");
     			while(!Arrays.asList(SyncronizingSets.restOfIdStartingStatement).contains(lookahead.getTokenCode())){
-    				lookahead = td.getNextToken();
+    				lookahead = getNextToken();
     			}
     		}
     	}
@@ -335,10 +356,15 @@ public class Parser{
     		match(TokenCode.INCDECOP);
     		match(TokenCode.SEMICOLON);
     	}
-    	
+    	else{
+		System.out.println("Smellycat Error in Statement");
+		while(!Arrays.asList(SyncronizingSets.statement).contains(lookahead.getTokenCode())){
+			lookahead = getNextToken();
+		}
+    	}
     }
-    private void _restOfStartingStatement(){
-    	System.out.println("_restOfStartingStatement");
+    private void _restOfStartingStatement() throws IOException{
+    	//System.out.println("_restOfStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.ASSIGNOP){
     		match(TokenCode.ASSIGNOP);
     		expression();
@@ -347,16 +373,22 @@ public class Parser{
     	else if(lookahead.getTokenCode() == TokenCode.INCDECOP){
     		match(TokenCode.INCDECOP);
     	}
+    	else{
+		System.out.println("Smellycat Error in Statement");
+		while(!Arrays.asList(SyncronizingSets.statement).contains(lookahead.getTokenCode())){
+			lookahead = getNextToken();
+		}
+    	}
     }
 
 
-	private void optionalExpression(){
-    	System.out.println("optionalExpression");
+	private void optionalExpression() throws IOException{
+    	//System.out.println("optionalExpression");
 		expression();
 	}
 
 	private boolean statementBlock() throws IOException{
-    	System.out.println("statementBlock");
+    	//System.out.println("statementBlock");
 		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
 			match(TokenCode.LBRACE);
 			statementList();
@@ -366,8 +398,8 @@ public class Parser{
 		return false;
 	}
 
-	private void incrDecVar(){
-    	System.out.println("incrDecVar");
+	private void incrDecVar() throws IOException{
+    	//System.out.println("incrDecVar");
 		variableLoc();
 		if(lookahead.getTokenCode() == TokenCode.INCDECOP) {
 			match(TokenCode.INCDECOP);
@@ -375,77 +407,97 @@ public class Parser{
 	}
 
 	private void optionalElse() throws IOException{
-    	System.out.println("optionalElse");
+    	//System.out.println("optionalElse");
 		if(lookahead.getTokenCode() == TokenCode.ELSE) {
 			match(TokenCode.ELSE);
-			statementBlock();
+			if(!statementBlock()){
+				
+				System.out.println("Smellycat Expected {");
+				while(!isInFollow(SyncronizingSets.optionalElse)){
+					lookahead = getNextToken();
+				}
+				
+			}
 		}
 	}
 
-	private void expressionList(){
-    	System.out.println("expressionList");
+	private void expressionList() throws IOException{
+    	//System.out.println("expressionList");
 		expression();
 		moreExpressions();
 	}
 
-	private void moreExpressions(){
-    	System.out.println("moreExpressions");
+	private void moreExpressions() throws IOException{
+    	//System.out.println("moreExpressions");
 		if(lookahead.getTokenCode() == TokenCode.COMMA) {
 			match(TokenCode.COMMA);
 			expression();
 			moreExpressions();
 		}
 	}
-	private void expression(){
-    	System.out.println("expression");
+	private void expression() throws IOException{
+    	//System.out.println("expression");
 		simpleExpression();
 		_expression();
 	}
 
-	private void _expression() {
-    	System.out.println("_expression");
+	private void _expression() throws IOException {
+    	//System.out.println("_expression");
 		if(lookahead.getTokenCode() == TokenCode.RELOP) {
 			match(TokenCode.RELOP);
-			simpleExpression();
+			if(!simpleExpression()){
+				System.out.println("Smellycat Error in expression");
+    			while(!Arrays.asList(SyncronizingSets._expression).contains(lookahead.getTokenCode())){
+    				lookahead = getNextToken();
+    			}
+			}
 		}
 	}
 
     
-    private void simpleExpression(){
-    	System.out.println("simpleExpression");
+    private boolean simpleExpression() throws IOException{
+    	//System.out.println("simpleExpression");
     	if(sign()){
     		term();
     		_simpleExpression();
+    		return true;
     	}
-    	else{
-    		term();
+    	else if(term()){
     		_simpleExpression();
+    		return true;
     	}
+		return false;
     }
     
-    private void _simpleExpression(){
-    	System.out.println("_simpleExpression");
+    private void _simpleExpression() throws IOException{
+    	//System.out.println("_simpleExpression");
     	if(lookahead.getTokenCode() == TokenCode.ADDOP){
     		match(TokenCode.ADDOP);
     		term();
     		_simpleExpression();
     	}
     }
-    private void term(){
-    	System.out.println("term");
-    	factor();
-    	_term();
+    private boolean term() throws IOException{
+    	//System.out.println("term");
+    	if(factor()){
+    		_term();
+    		return true;
+    	}
+    	else{
+    		_term();
+    		return false;
+    	}
     }
-    private void _term(){
-    	System.out.println("_term");
+    private void _term() throws IOException{
+    	//System.out.println("_term");
     	if(lookahead.getTokenCode() == TokenCode.MULOP){
     		match(TokenCode.MULOP);
     		factor();
     		_term();
     	}
     }
-    private boolean factor(){
-    	System.out.println("factor");
+    private boolean factor() throws IOException{
+    	//System.out.println("factor");
     	if(lookahead.getTokenCode() == TokenCode.NUMBER){
     		match(TokenCode.NUMBER);
     		return true;
@@ -461,20 +513,22 @@ public class Parser{
     		factor();
     		return true;
     	}
-    	else{
-    		idStartingFactor();
+    	else if (idStartingFactor()){
+    		return true;
     	}
     	return false;
     }
-    private void idStartingFactor(){
-    	System.out.println("idStartingFactor");
+    private boolean idStartingFactor() throws IOException{
+    	//System.out.println("idStartingFactor");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		restOfIdStartingFactor();
+    		return true;
     	}
+		return false;
     }
-    private void restOfIdStartingFactor(){
-    	System.out.println("restOfIdStartingFactor");
+    private void restOfIdStartingFactor() throws IOException{
+    	//System.out.println("restOfIdStartingFactor");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -486,15 +540,15 @@ public class Parser{
     		match(TokenCode.RPAREN);
     	}
     }
-    private void variableLoc(){
-    	System.out.println("variableLoc");
+    private void variableLoc() throws IOException{
+    	//System.out.println("variableLoc");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
     		_variableLoc();
     	}
     }
-    private void _variableLoc(){
-    	System.out.println("_variableLoc");
+    private void _variableLoc() throws IOException{
+    	//System.out.println("_variableLoc");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
     		expression();
@@ -504,7 +558,7 @@ public class Parser{
    
     // Ekkert! 
     private boolean sign(){
-    	System.out.println("sign");
+    	//System.out.println("sign");
     	if(lookahead.getOpType() == OpType.PLUS){
     		match(TokenCode.ADDOP);
     		return true;
@@ -515,4 +569,5 @@ public class Parser{
     	}
     	return false;
     }
+    
 }
