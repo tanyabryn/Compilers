@@ -36,7 +36,6 @@ public class Parser{
 			try {
 				//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
 				System.out.println(lookahead.getTokenCode());
-				System.out.println(nextLookahead);
 				if(nextLookahead == null){
 					lookahead = td.getNextToken();
 				}
@@ -56,7 +55,7 @@ public class Parser{
 			//containsError = true;
 			//expected = t;
 			//lineOfTokens.add(lookahead.getSymTabEntry().getLexeme());
-			//System.out.println(lookahead.getTokenCode());
+			System.out.println(lookahead.getTokenCode());
 			//System.out.println(lookahead.getSymTabEntry().getLexeme());
 			System.out.println(t);
 			System.out.println("Villa");
@@ -87,8 +86,8 @@ public class Parser{
 			_variableDeclarations();
 		}
 		else{
-				nextLookahead = td.getNextToken();
-				System.out.println("hello" + nextLookahead.getTokenCode());
+	/*			nextLookahead = td.getNextToken();
+				System.out.println("hello1" + nextLookahead.getTokenCode());
 				if(Arrays.asList(SyncronizingSets.type).contains(nextLookahead.getTokenCode())){
 					System.out.println("okei");
 					match(null);
@@ -98,15 +97,18 @@ public class Parser{
 					match(TokenCode.SEMICOLON);
 					_variableDeclarations();
 					
-				
-			}
-				else{
-					
-				}
+			*/	
 			
 		}
 	}
 
+	private boolean typeError(){
+		if(Arrays.asList(SyncronizingSets.type).contains(lookahead.getTokenCode())){
+			System.out.println("Vantar typu");
+			return true;
+		}
+		return false;
+	}
 	private boolean type(){
 		System.out.println("type");
 		if(lookahead.getTokenCode() == TokenCode.INT){
@@ -117,6 +119,10 @@ public class Parser{
 			match(TokenCode.REAL);
 			return true;
 		}
+	/*	else if(Arrays.asList(SyncronizingSets.type).contains(lookahead.getTokenCode())){
+			System.out.println("Vantar typu");
+			return true;
+		}*/
 		return false;
 			
 	}
@@ -216,17 +222,17 @@ public class Parser{
     		parameterList();
     	}
     }
-    private void statementList() {
+    private void statementList() throws IOException {
     	System.out.println("statementList");
     	_statementList();
     }
-    private void _statementList() {
+    private void _statementList() throws IOException {
     	System.out.println("_statementList");
     	if(statement()){
     		_statementList();
     	}
     }
-    private boolean statement(){
+    private boolean statement() throws IOException{
     	System.out.println("statement");
     	if(idStartingStatement()){
     		return true;
@@ -274,25 +280,11 @@ public class Parser{
         	return true;
     	}
     	else{
-			try {
-				nextLookahead = td.getNextToken();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("hello expression " + nextLookahead.getTokenCode());
-			if(Arrays.asList(SyncronizingSets.expression).contains(nextLookahead.getTokenCode())){
-				System.out.println("okei expression");
-				match(null);
-				lookahead = nextLookahead;
-				nextLookahead = null;
-				statement();
-			}
     	}
 		return false;
 
     }
-    private boolean idStartingStatement(){
+    private boolean idStartingStatement() throws IOException{
     	System.out.println("idStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.IDENTIFIER){
     		match(TokenCode.IDENTIFIER);
@@ -301,7 +293,7 @@ public class Parser{
     	}
     	return false;
     }
-    private void restOfStartingStatement(){
+    private void restOfStartingStatement() throws IOException{
     	System.out.println("restOfStartingStatement");
     	if(lookahead.getTokenCode() == TokenCode.LBRACKET){
     		match(TokenCode.LBRACKET);
@@ -311,14 +303,32 @@ public class Parser{
     	}
     	else if(lookahead.getTokenCode() == TokenCode.ASSIGNOP){
     		match(TokenCode.ASSIGNOP);
-    		expression();
-    		match(TokenCode.SEMICOLON);
+    		expression();	
+    		if(lookahead.getTokenCode() == TokenCode.SEMICOLON){
+    			match(TokenCode.SEMICOLON);
+    		}
+    		else{
+    			//System.out.println("smellycat");
+    			while(!Arrays.asList(SyncronizingSets.restOfIdStartingStatement).contains(lookahead.getTokenCode())){
+    				lookahead = td.getNextToken();
+    			}
+    		}
     	}
+
     	else if(lookahead.getTokenCode() == TokenCode.LPAREN){
     		match(TokenCode.LPAREN);
     		expressionList();
     		match(TokenCode.RPAREN);
-    		match(TokenCode.SEMICOLON);
+    		if(lookahead.getTokenCode() == TokenCode.SEMICOLON){
+    			
+    			match(TokenCode.SEMICOLON);
+    		}
+    		/*else{
+    			if(Arrays.asList(SyncronizingSets.expression).contains(lookahead.getTokenCode())){
+    				nextLookahead = lookahead;
+    				match(TokenCode.SEMICOLON);
+    			}
+    		}*/
     	}
     	else if(lookahead.getTokenCode() == TokenCode.INCDECOP){
     		
@@ -345,7 +355,7 @@ public class Parser{
 		expression();
 	}
 
-	private boolean statementBlock(){
+	private boolean statementBlock() throws IOException{
     	System.out.println("statementBlock");
 		if(lookahead.getTokenCode() == TokenCode.LBRACE) {
 			match(TokenCode.LBRACE);
@@ -364,7 +374,7 @@ public class Parser{
 		}
 	}
 
-	private void optionalElse(){
+	private void optionalElse() throws IOException{
     	System.out.println("optionalElse");
 		if(lookahead.getTokenCode() == TokenCode.ELSE) {
 			match(TokenCode.ELSE);
@@ -434,23 +444,27 @@ public class Parser{
     		_term();
     	}
     }
-    private void factor(){
+    private boolean factor(){
     	System.out.println("factor");
     	if(lookahead.getTokenCode() == TokenCode.NUMBER){
     		match(TokenCode.NUMBER);
+    		return true;
     	}
     	else if (lookahead.getTokenCode() == TokenCode.LPAREN){
     		match(TokenCode.LPAREN);
     		expression();
     		match(TokenCode.RPAREN);
+    		return true;
     	}
     	else if (lookahead.getTokenCode() == TokenCode.NOT){
     		match(TokenCode.NOT);
     		factor();
+    		return true;
     	}
     	else{
     		idStartingFactor();
-    	}    	
+    	}
+    	return false;
     }
     private void idStartingFactor(){
     	System.out.println("idStartingFactor");
@@ -488,6 +502,7 @@ public class Parser{
     	}
     }
    
+    // Ekkert! 
     private boolean sign(){
     	System.out.println("sign");
     	if(lookahead.getOpType() == OpType.PLUS){
